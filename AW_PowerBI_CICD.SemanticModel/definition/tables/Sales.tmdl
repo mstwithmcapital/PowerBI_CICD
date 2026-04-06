@@ -1,0 +1,117 @@
+table Sales
+	lineageTag: 4932daf7-851c-42ce-95de-2407935c787a
+
+	column SalesOrderNumber
+		dataType: string
+		lineageTag: 913bbc4f-8e72-402f-8dcd-62342adc636d
+		summarizeBy: none
+		sourceColumn: SalesOrderNumber
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrderDate
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 325d8618-7738-455f-9e86-aa37dc912c37
+		summarizeBy: none
+		sourceColumn: OrderDate
+
+		variation Variation
+			isDefault
+			relationship: 82e6eab5-0028-4d5c-a7f0-054ccd057f05
+			defaultHierarchy: LocalDateTable_b0740e9a-c6cf-4f8b-8d67-403dfb027aa8.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 65dd127b-24cc-4f26-9db4-fb3c4e4bfee1
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ResellerKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 37f791d9-59f4-46cc-b6ce-df044ba7399a
+		summarizeBy: count
+		sourceColumn: ResellerKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column EmployeeKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 8958c657-7b40-4f58-a9c9-3ab18213c155
+		summarizeBy: count
+		sourceColumn: EmployeeKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column SalesTerritoryKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 126c9b33-c6b1-4c18-b2d3-8a8aba11717d
+		summarizeBy: count
+		sourceColumn: SalesTerritoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 5a67dae7-7fdc-428b-aca5-cb1b6ea10b71
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Unit Price'
+		dataType: double
+		lineageTag: 4a4d2a45-6593-4970-a822-d8307c64244e
+		summarizeBy: sum
+		sourceColumn: Unit Price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Sales
+		dataType: double
+		lineageTag: c9561c77-b305-4fb1-b583-a23fdfe807f9
+		summarizeBy: sum
+		sourceColumn: Sales
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Cost
+		dataType: double
+		lineageTag: 4033b3f6-59c4-4f6e-b644-f800d3eedb81
+		summarizeBy: sum
+		sourceColumn: Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition Sales = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("D:\Maharshi\3.Other\PowerBI_CICD\Adventure_Works\Dataset\Sales.csv"),[Delimiter="	", Columns=10, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Replaced Value" = Table.ReplaceValue(#"Promoted Headers","$","",Replacer.ReplaceText,{"Unit Price", "Sales", "Cost"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"SalesOrderNumber", type text}, {"OrderDate", type date}, {"ProductKey", Int64.Type}, {"ResellerKey", Int64.Type}, {"EmployeeKey", Int64.Type}, {"SalesTerritoryKey", Int64.Type}, {"Quantity", Int64.Type}, {"Unit Price", type number}, {"Sales", type number}, {"Cost", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

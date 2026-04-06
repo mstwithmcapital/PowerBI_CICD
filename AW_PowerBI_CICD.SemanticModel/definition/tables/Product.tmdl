@@ -1,0 +1,85 @@
+table Product
+	lineageTag: c178b804-9879-4d00-bc12-703e42943ad5
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 3e07538e-93ed-4cfb-8692-301a78eb1cc5
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Product
+		dataType: string
+		lineageTag: 9e097c3d-a445-487f-a446-e12481e31036
+		summarizeBy: none
+		sourceColumn: Product
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Standard Cost'
+		dataType: double
+		lineageTag: d0af3283-5c43-4f93-898d-4b68ffa6eed4
+		summarizeBy: none
+		sourceColumn: Standard Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Color
+		dataType: string
+		lineageTag: 32e37176-913f-42f8-8ff9-1cd00809f137
+		summarizeBy: none
+		sourceColumn: Color
+
+		annotation SummarizationSetBy = Automatic
+
+	column Subcategory
+		dataType: string
+		lineageTag: 50c1ab9a-b57b-4692-8985-a46da703111a
+		summarizeBy: none
+		sourceColumn: Subcategory
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 06806c21-9feb-4be0-a88e-b90cbd7fa1e3
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Background Color Format'
+		dataType: string
+		lineageTag: 80d1146d-104f-442a-9a7f-0687d0ca1484
+		summarizeBy: none
+		sourceColumn: Background Color Format
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Font Color Format'
+		dataType: string
+		lineageTag: 60bbe345-6feb-4204-b5ad-d0270f1def7c
+		summarizeBy: none
+		sourceColumn: Font Color Format
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("D:\Maharshi\3.Other\PowerBI_CICD\Adventure_Works\Dataset\Product.csv"),[Delimiter="	", Columns=8, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Replaced Value" = Table.ReplaceValue(#"Promoted Headers","$","",Replacer.ReplaceText,{"Standard Cost"}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Replaced Value",{{"ProductKey", Int64.Type}, {"Product", type text}, {"Standard Cost", type number}, {"Color", type text}, {"Subcategory", type text}, {"Category", type text}, {"Background Color Format", type text}, {"Font Color Format", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
